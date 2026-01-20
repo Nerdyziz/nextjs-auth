@@ -28,7 +28,13 @@ export async function POST(req) {
             username: existingUser.username,
         };
         const token = jwt.sign(tokenData, process.env.JWT_SECRET, {expiresIn: "1d"});
-        response.cookies.set("token", token, {httpOnly: true});
+        response.cookies.set("token", token, 
+            {httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60, // 1 day in seconds
+
+            });
 
         return response;
     } catch (error) {
