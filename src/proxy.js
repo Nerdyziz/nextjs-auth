@@ -4,7 +4,7 @@ export async function proxy(req = NextRequest) {
   const token = req.cookies.get("token")?.value || "";
 
   const path = req.nextUrl.pathname;
-  const isPublicPath = ["/login", "/signup", "/"].includes(path);
+  const isPublicPath = ["/login", "/signup", "/", "/verifyemail"].includes(path);
 
   if (!token && !isPublicPath) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
@@ -17,5 +17,5 @@ export async function proxy(req = NextRequest) {
 }
 
  export const config = {
-    matcher: ["/login", "/signup", "/", "/profile"],
+    matcher: ["/login", "/signup", "/", "/profile","/verifyemail"],
   };

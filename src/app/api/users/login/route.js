@@ -19,7 +19,9 @@ export async function POST(req) {
             return NextResponse.json({message: "Invalid credentials"}, {status: 400});
         }
         const response = NextResponse.json({message: "Login successful"}, {status: 200});
-
+        if(!existingUser.isVerfied){
+            return NextResponse.json({message: "Please verify your email to login"}, {status: 401});
+        }
         const tokenData = {
             id: existingUser._id,
             email: existingUser.email,

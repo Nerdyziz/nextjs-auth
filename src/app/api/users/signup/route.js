@@ -1,11 +1,12 @@
 import connectDB from "@/dbConfig/dbConfig";
 import  User  from "@/models/userModel";
 import bcrypt from "bcryptjs";
-import { NextResponse} from "next/server";
+import { NextRequest, NextResponse} from "next/server";
+import { sendEmail } from "@/helpers/mail";
 
 connectDB();
 
-export async function POST(req) {
+export async function POST(req = NextRequest) {
     try {
         const { username, email, password } = await req.json();
 
@@ -21,7 +22,11 @@ export async function POST(req) {
             password: hashedPassword,
         });
 
-        await newUser.save();
+        const savedUser = await newUser.save();
+        console.log("New user created:", savedUser);
+
+        // send verification email
+        await sendEmail({email, emailType: "VERIFY", userId: savedUser._id})
         return NextResponse.json({message: "User created successfully"}, {status: 201});
     } catch (error) {
         console.error("Error in signup route:", error);
