@@ -12,7 +12,12 @@ export async function POST(req = NextRequest) {
 
         const existingUser = await User.findOne({email});
         if (existingUser) {
+            if(!existingUser.isVerified && existingUser.verifyTokenExpiry < Date.now()){
+                await User.deleteOne({email});
+                return NextResponse.json({message: "Previous unverified user deleted. Please signup again."}, {status: 400});
+            }
             return NextResponse.json({message: "User already exists"}, {status: 400});
+
         }
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -33,3 +38,4 @@ export async function POST(req = NextRequest) {
         return NextResponse.json({message: "Internal Server Error"}, {status: 500});
     }   
 }
+
